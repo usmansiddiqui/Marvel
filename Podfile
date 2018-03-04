@@ -6,5 +6,6 @@ target 'Marvel' do
 pod 'Alamofire', '4.6'
 pod 'AlamofireImage', '~> 3.3'
 pod 'SwiftyJSON'
+pod 'SnapKit', '~> 4.0.0'
 
 end
