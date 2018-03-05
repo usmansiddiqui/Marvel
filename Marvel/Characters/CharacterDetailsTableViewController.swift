@@ -28,8 +28,11 @@ class CharacterDetailsTableViewController: UITableViewController {
         
         title = character.characterName
         
-        let nib = UINib(nibName: CharactersDataConstants.cellHeaderNib, bundle: nil)
-        tableView.register(nib, forHeaderFooterViewReuseIdentifier: CharactersDataConstants.cellHeaderNib)
+        tableView.delegate   = self
+        tableView.dataSource = self
+        tableView.backgroundColor = UIColor.white
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: CharactersDataConstants.dataCell)
+        tableView.separatorColor = UIColor.colorWithHexValue("99FFFF")
         
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
@@ -37,6 +40,8 @@ class CharacterDetailsTableViewController: UITableViewController {
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
     }
+    
+    
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -67,30 +72,30 @@ class CharacterDetailsTableViewController: UITableViewController {
         
     }
 
-    
-    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 40.0
-    }
-//
-    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        if let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: CharactersDataConstants.cellHeaderNib) as? CellHeaderView {
-            header.sectionTitle.text = CharacterDataItems(rawValue:section)?.title
-            return header
-        }
-
-        return UIView()
-        
-    }
-    
     func configureCell(cell: UITableViewCell,data: CharactersData) {
      
         cell.textLabel?.text = data.name
         cell.textLabel?.font = UIFont.preferredFont(forTextStyle: .caption1)
         cell.textLabel?.textColor = .black
         cell.textLabel?.numberOfLines = 0
+        cell.contentView.backgroundColor = UIColor.colorWithHexValue("CCFFFF")
         
     }
 
+    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let returnedView = UIView(frame: CGRect(x: 0, y: 10, width: tableView.frame.width, height: 40))
+        returnedView.backgroundColor = UIColor.colorWithHexValue("99FFFF")
+        
+        let label = UILabel(frame: CGRect(x: 20, y: 5, width: 80, height: 30))
+        label.text = CharacterDataItems(rawValue:section)?.title
+        returnedView.addSubview(label)
+        
+        return returnedView
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 40.0
+    }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         

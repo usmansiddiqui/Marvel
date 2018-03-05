@@ -7,10 +7,11 @@
 //
 
 import UIKit
+import SnapKit
 
 class MainViewController: UIViewController {
 
-    @IBOutlet weak var touchStartLabel: UILabel!
+    var touchStartLabel: UILabel!
     var timer = Timer()
     
     var charactersSegueIdentifier = "showCharacters"
@@ -18,10 +19,49 @@ class MainViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        touchStartLabel.text = "Tap anywhere to continue"
+        setupUI()
         animateLabel()
         
         // Do any additional setup after loading the view, typically from a nib.
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        self.navigationController?.setNavigationBarHidden(true, animated: animated)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        self.navigationController?.setNavigationBarHidden(false, animated: animated)
+    }
+    
+    func setupUI() {
+        
+        let logo = UIImageView(image: UIImage(named: "logo"))
+        view.addSubview(logo)
+        
+        logo.snp.makeConstraints { (make) in
+            
+            make.width.equalTo(268)
+            make.height.equalTo(60)
+            make.centerX.equalToSuperview()
+            make.centerY.equalToSuperview()
+            
+        }
+        touchStartLabel = UILabel()
+        touchStartLabel.text = "Tap anywhere to continue"
+        touchStartLabel.textColor = .lightGray
+        touchStartLabel.font = UIFont.preferredFont(forTextStyle: .title2)
+        view.addSubview(touchStartLabel)
+        
+        touchStartLabel.snp.makeConstraints { (make) in
+            make.bottom.equalTo(view).offset(-20)
+            make.centerX.equalToSuperview()
+            //make.centerY.equalToSuperview()
+        }
+        
     }
     
     func animateLabel() {
@@ -37,7 +77,8 @@ class MainViewController: UIViewController {
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         
-        performSegue(withIdentifier: charactersSegueIdentifier, sender: self)
+        let charactersVC = CharactersViewController()
+        navigationController?.pushViewController(charactersVC, animated: true)
         
         timer.invalidate()
     }
@@ -45,10 +86,6 @@ class MainViewController: UIViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        
     }
 
 

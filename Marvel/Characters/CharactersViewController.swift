@@ -10,7 +10,7 @@ import UIKit
 
 class CharactersViewController: UIViewController {
     
-    @IBOutlet weak var charactersCollectionView: UICollectionView!
+    var charactersCollectionView: UICollectionView!
     struct CharactersConstants {
 
         static let titleString = "Characters"
@@ -22,15 +22,44 @@ class CharactersViewController: UIViewController {
     let networkwManager = NetworkManager()
     var charactersArray : [Character] = []
     let utils = Utilities()
-    var selectedRow: Int?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         title = CharactersConstants.titleString
+        setupCharactersCollectionView()
         loadCharacters()
 
+        navigationItem.hidesBackButton = true
+        
         // Do any additional setup after loading the view.
+    }
+    
+    func setupCharactersCollectionView() {
+        let layout = UICollectionViewFlowLayout()
+        layout.sectionInset = UIEdgeInsets(top:0, left: 20, bottom: 0, right: 20)
+        layout.itemSize = CGSize(width: 150, height: 250)
+        
+        
+        charactersCollectionView = UICollectionView(frame: self.view.frame, collectionViewLayout: layout)
+        charactersCollectionView.delegate   = self
+        charactersCollectionView.dataSource = self
+        charactersCollectionView.register(CharacterCollectionViewCell.self, forCellWithReuseIdentifier: CharactersConstants.characterCellIdentifier)
+        charactersCollectionView.backgroundColor = UIColor.white
+        
+        self.view.addSubview(charactersCollectionView)
+        
+        charactersCollectionView.snp.makeConstraints { (make) in
+            make.top.equalTo(view)
+            make.bottom.equalTo(view)
+            make.left.equalTo(view)
+            make.right.equalTo(view)
+        }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        view.backgroundColor = .white
     }
 
     override func didReceiveMemoryWarning() {
@@ -52,36 +81,19 @@ class CharactersViewController: UIViewController {
     }
     
 
-    
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        
-        if segue.identifier == CharactersConstants.characterDetailIdentifier {
-            if let destinationVC = segue.destination as? CharacterDetailsTableViewController {
-                
-                guard let selected = selectedRow else {
-                    return
-                }
-                destinationVC.character = charactersArray[selected]                
-            }
-        }
-        
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
- 
-
 }
 
 
 extension CharactersViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        selectedRow = indexPath.row
-        performSegue(withIdentifier: CharactersConstants.characterDetailIdentifier, sender: self)
+        
+        let charactersDetailVC = CharacterDetailsTableViewController()
+        navigationController?.pushViewController(charactersDetailVC, animated: true)
+        charactersDetailVC.character = charactersArray[indexPath.row]
     }
+    
+    
      func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CharactersConstants.characterCellIdentifier, for: indexPath) as? CharacterCollectionViewCell {
@@ -108,6 +120,7 @@ extension CharactersViewController: UICollectionViewDelegate, UICollectionViewDa
             cell.characterImage.layer.masksToBounds = true
             cell.characterImage.layer.cornerRadius = 10.0
             cell.characterImage.layer.borderColor = UIColor.white.cgColor
+            cell.characterImage.contentMode = .scaleAspectFit
             
         })
         
